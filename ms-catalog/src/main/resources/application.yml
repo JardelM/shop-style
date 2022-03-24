@@ -1,0 +1,9 @@
+server:
+  port : 8081
+
+spring:
+  data:
+    mongodb:
+      user:
+      password:
+      uri: mongodb://localhost:27017/catalog
