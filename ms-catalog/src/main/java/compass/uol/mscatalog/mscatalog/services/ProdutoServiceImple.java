@@ -72,7 +72,13 @@ public class ProdutoServiceImple implements ProdutoService{
 
     @Override
     public void deleteProduct(String id) {
-        verificaExistenciaProduto(id);
+        Produto produto = verificaExistenciaProduto(id);
+        List<Categoria> categorias = categoriaRepository.findAllProductsById(produto.getId());
+
+        categorias.forEach(categoria -> {
+            categoria.getProducts().remove(produto);
+            categoriaRepository.save(categoria);
+        });
         produtoRepository.deleteById(id);
     }
 
