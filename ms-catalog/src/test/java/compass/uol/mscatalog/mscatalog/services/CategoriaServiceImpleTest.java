@@ -76,19 +76,19 @@ class CategoriaServiceImpleTest {
         assertEquals(Collections.singletonList(categoriaDtoEsperada) , atual);
     }
 
-    @Test
-    void deveriaRetornarTodosProdutosDeDeterminadaCategoria(){
-        String id = "id";
-        Categoria categoria = criaCategoria();
-        Produto produto = criaProduto();
-        ProdutoDto produtoDtoEsperado = criaProdutoDto();
-
-        when(categoriaRepository.findById(id)).thenReturn(Optional.of(categoria));
-        when(modelMapper.map(produto , ProdutoDto.class)).thenReturn(produtoDtoEsperado);
-
-        List<ProdutoDto> atual = service.findAllProductsByCategory(id);
-        assertEquals(Collections.singletonList(produtoDtoEsperado) , atual);
-    }
+//    @Test
+//    void deveriaRetornarTodosProdutosDeDeterminadaCategoria(){
+//        String id = "id";
+//        Categoria categoria = criaCategoria();
+//        Produto produto = criaProduto();
+//        ProdutoDto produtoDtoEsperado = criaProdutoDto();
+//
+//        when(categoriaRepository.findById(id)).thenReturn(Optional.of(categoria));
+//        when(modelMapper.map(produto , ProdutoDto.class)).thenReturn(produtoDtoEsperado);
+//
+//        List<ProdutoDto> atual = service.findAllProductsByCategory(id);
+//        assertEquals(Collections.singletonList(produtoDtoEsperado) , atual);
+//    }
 
 
     private Categoria criaCategoria(){

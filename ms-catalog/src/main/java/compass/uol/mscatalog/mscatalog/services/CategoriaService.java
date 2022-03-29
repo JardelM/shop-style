@@ -16,5 +16,5 @@ public interface CategoriaService {
 
     void delete(String id);
 
-    List<ProdutoDto> findAllProductsByCategory(String id);
+    List<ProdutoDto> findProductsFromCategory(String id);
 }

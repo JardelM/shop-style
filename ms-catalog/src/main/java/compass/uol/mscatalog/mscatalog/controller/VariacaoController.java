@@ -2,6 +2,7 @@ package compass.uol.mscatalog.mscatalog.controller;
 
 import compass.uol.mscatalog.mscatalog.dto.VariacaoDto;
 import compass.uol.mscatalog.mscatalog.dto.VariacaoFormDto;
+import compass.uol.mscatalog.mscatalog.dto.VariacaoProdutoDto;
 import compass.uol.mscatalog.mscatalog.entity.Variacao;
 import compass.uol.mscatalog.mscatalog.services.VariacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class VariacaoController {
     }
 
     @GetMapping("/{id}")
-    public VariacaoDto getVariation(@PathVariable String id){
+    public VariacaoProdutoDto getVariation(@PathVariable String id){
         return this.service.getVariation(id);
     }
 

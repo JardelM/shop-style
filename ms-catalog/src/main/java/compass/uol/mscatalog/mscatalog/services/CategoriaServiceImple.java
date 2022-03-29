@@ -63,11 +63,11 @@ public class CategoriaServiceImple implements CategoriaService {
     }
 
     @Override
-    public List<ProdutoDto> findAllProductsByCategory(String id) {
+    public List<ProdutoDto> findProductsFromCategory(String id) {
         Categoria categoria = veficaExistenciaDeId(id);
 
         List<Produto> produtos = categoria.getProducts();
-        return produtos.stream().map(produto -> modelMapper.map(produto, ProdutoDto.class)).collect(Collectors.toList());
+        return produtos.stream().map(produto -> modelMapper.map(produto , ProdutoDto.class)).collect(Collectors.toList());
     }
 
 

@@ -34,7 +34,7 @@ public class CategoriaController {
 
     @GetMapping("/{id}/products")
     public List<ProdutoDto> findProductsByCategory(@PathVariable String id){
-        return this.service.findAllProductsByCategory(id);
+        return this.service.findProductsFromCategory(id);
     }
 
     @PutMapping("/{id}")

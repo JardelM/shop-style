@@ -36,23 +36,23 @@ public class ProdutoServiceImple implements ProdutoService{
         Produto produto = modelMapper.map(body , Produto.class);
 
         Produto produtoCriado = produtoRepository.save(produto);
-        atualizaCategorias (categorias , produtoCriado); //aumenta a lista de categorias
+
+        categorias.forEach(categoria -> {
+            adicionaProdutoACategoria(produtoCriado , categoria);
+        });
 
         return modelMapper.map(produtoCriado , ProdutoDto.class);
 
     }
 
-
     @Override
     public List<ProdutoDto> findAll() {
-
         List<Produto> produtos = produtoRepository.findAll();
         return produtos.stream().map(produto -> modelMapper.map(produto , ProdutoDto.class)).collect(Collectors.toList());
     }
 
     @Override
     public ProdutoDto getProduct(String id) {
-
         Produto produto = verificaExistenciaProduto(id);
         return modelMapper.map(produto, ProdutoDto.class);
 
@@ -62,11 +62,18 @@ public class ProdutoServiceImple implements ProdutoService{
     public ProdutoDto updateProduct(String id , ProdutoFormDto produtoFormDto) {
 
         verificaExistenciaProduto(id);
+
         List<Categoria> categorias = verificaCategoria(produtoFormDto);
-        Produto produtoAAtualizar = modelMapper.map(produtoFormDto , Produto.class);
-        produtoAAtualizar.setId(id);
-        Produto produtoAtualizado = this.produtoRepository.save(produtoAAtualizar);
+
+        Produto produtoaAtualizar = modelMapper.map(produtoFormDto , Produto.class);
+        produtoaAtualizar.setId(id);
+        Produto produtoAtualizado = produtoRepository.save(produtoaAtualizar);
+
+        atualizaCategoria(categorias ,produtoAtualizado );
+
         return modelMapper.map(produtoAtualizado , ProdutoDto.class);
+
+
 
     }
 
@@ -124,18 +131,30 @@ public class ProdutoServiceImple implements ProdutoService{
         return categoriaRepository.findById(catId).orElseThrow(() -> new CategoryNotFoundException(catId));
     }
 
-    private void atualizaCategorias(List<Categoria> categorias, Produto produtoCriado) {
+
+    private void adicionaProdutoACategoria(Produto produtoCriado , Categoria categoria){
+
+        categoria.getProducts().add(produtoCriado);
+        categoriaRepository.save(categoria);
+    }
+
+
+    private void atualizaCategoria (List<Categoria> categorias , Produto produtoAtualizado){
 
         categorias.forEach(categoria -> {
-            if (!categoria.getProducts().contains(produtoCriado)){
-                categoria.getProducts().add(produtoCriado);
-                categoriaRepository.save(categoria);
-            }
+            if (!categoria.getProducts().contains(produtoAtualizado))
+                adicionaProdutoACategoria(produtoAtualizado , categoria);
         });
+        removeProdutoDaCategoria(categorias , produtoAtualizado);
+    }
+
+    private void removeProdutoDaCategoria(List<Categoria> categorias, Produto produtoAtualizado) {
+
         List<Categoria> todasCategorias = categoriaRepository.findAll();
-        todasCategorias.stream().filter(categoria -> !categorias.contains(categoria))
+        todasCategorias.stream()
+                .filter(categoria -> !categorias.contains(categoria))
                 .forEach(categoria -> {
-                    categoria.getProducts().remove(produtoCriado);
+                    categoria.getProducts().remove(produtoAtualizado);
                     categoriaRepository.save(categoria);
                 });
     }

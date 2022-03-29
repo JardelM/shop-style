@@ -7,3 +7,15 @@ spring:
       user:
       password:
       uri: mongodb://localhost:27017/catalog
+
+      application:
+        name: catalog
+        rabbitmq:
+          addresses: amqps://feibsqjg:On2bsDE32Ap27vHvIhqVRzOwW473dXLU@woodpecker.rmq.cloudamqp.com/feibsqjg
+
+      eureka:
+        client:
+          serviceUrl:
+            defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+        instance:
+          preferIpAddress: true

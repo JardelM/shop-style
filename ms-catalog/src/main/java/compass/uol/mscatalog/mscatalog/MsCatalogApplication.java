@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 @SpringBootApplication
-@EnableSpringDataWebSupport
 public class MsCatalogApplication {
 
     @Bean

@@ -2,6 +2,7 @@ package compass.uol.mscatalog.mscatalog.services;
 
 import compass.uol.mscatalog.mscatalog.dto.VariacaoDto;
 import compass.uol.mscatalog.mscatalog.dto.VariacaoFormDto;
+import compass.uol.mscatalog.mscatalog.dto.VariacaoProdutoDto;
 
 public interface VariacaoService {
 
@@ -11,5 +12,5 @@ public interface VariacaoService {
 
     void deleteVariation(String id);
 
-    VariacaoDto getVariation(String id);
+    VariacaoProdutoDto getVariation(String id);
 }
