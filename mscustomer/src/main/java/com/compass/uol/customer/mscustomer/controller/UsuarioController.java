@@ -25,10 +25,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity <UsuarioDto> getUser (@PathVariable Long id){
+    public UsuarioDto getUser (@PathVariable Long id){
 
-        UsuarioDto usuario = this.service.getUser(id);
-        return ResponseEntity.ok(usuario);
+        return this.service.getUser(id);
     }
 
     @PutMapping("/{id}")

@@ -19,13 +19,11 @@ import java.util.stream.Collectors;
 public class CategoriaServiceImple implements CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
-    private final ProdutoRepository produtoRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public CategoriaServiceImple(CategoriaRepository categoryRepository, ProdutoRepository produtoRepository, ModelMapper modelMapper) {
+    public CategoriaServiceImple(CategoriaRepository categoryRepository, ModelMapper modelMapper) {
         this.categoriaRepository = categoryRepository;
-        this.produtoRepository = produtoRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -34,7 +32,7 @@ public class CategoriaServiceImple implements CategoriaService {
     public CategoriaDto createCategory(CategoriaFormDto body) {
 
         Categoria categoriaACriar = modelMapper.map( body , Categoria.class);
-        Categoria categoriaCriada = this.categoriaRepository.save(categoriaACriar);
+        Categoria categoriaCriada = categoriaRepository.save(categoriaACriar);
         return modelMapper.map(categoriaCriada , CategoriaDto.class);
     }
 
@@ -44,6 +42,15 @@ public class CategoriaServiceImple implements CategoriaService {
         return categorias.stream()
                 .map(categoria -> modelMapper.map(categoria, CategoriaDto.class)).collect(Collectors.toList());
     }
+
+    @Override
+    public List<ProdutoDto> findProductsFromCategory(String id) {
+        Categoria categoria = veficaExistenciaDeId(id);
+
+        List<Produto> produtos = categoria.getProducts();
+        return produtos.stream().map(produto -> modelMapper.map(produto , ProdutoDto.class)).collect(Collectors.toList());
+    }
+
 
     @Override
     public CategoriaDto updateCategory(String id, CategoriaFormDto body) {
@@ -60,15 +67,6 @@ public class CategoriaServiceImple implements CategoriaService {
         veficaExistenciaDeId(id);
         categoriaRepository.deleteById(id);
     }
-
-    @Override
-    public List<ProdutoDto> findProductsFromCategory(String id) {
-        Categoria categoria = veficaExistenciaDeId(id);
-
-        List<Produto> produtos = categoria.getProducts();
-        return produtos.stream().map(produto -> modelMapper.map(produto , ProdutoDto.class)).collect(Collectors.toList());
-    }
-
 
     private Categoria veficaExistenciaDeId(String id){
         return categoriaRepository.findById(id)

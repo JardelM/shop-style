@@ -4,6 +4,6 @@ import static java.lang.String.format;
 
 public class ProdutoNotActiveException extends RuntimeException {
     public ProdutoNotActiveException(String id) {
-        super(format("Produto de id %s não ativo"));
+        super(format("Produto de id %s não ativo" , id));
     }
 }

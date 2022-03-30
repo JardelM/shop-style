@@ -1,4 +1,4 @@
-package compass.uol.mscatalog.dto;
+package com.uol.mscheckout.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VariacaoMessageDto {
+public class ProdutoAtivoDto {
 
-    private String variant_id;
-    private Integer quantity;
+    private String id;
+    private Boolean active;
 }

@@ -9,6 +9,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class MessageListener {
 
@@ -19,13 +21,19 @@ public class MessageListener {
         this.variacaoRepository = variacaoRepository;
     }
 
-    @RabbitListener (queues = MQConfig.QUEUE)
-    public void listener (VariacaoMessageDto variacaoMessageDto){
-        Variacao variacao = variacaoRepository.findById(variacaoMessageDto.getId())
-                .orElseThrow(()-> new VariacaoNotFoundException(variacaoMessageDto.getId()));
 
-        Integer quantity = variacao.getQuantity() - variacaoMessageDto.getQuantity();
-        variacao.setQuantity(quantity);
-        variacaoRepository.save(variacao);
+    // diminui a quantidade de variacao no estoque.
+    @RabbitListener (queues = MQConfig.QUEUE)
+     void listener (List<VariacaoMessageDto> variacoesMessageDto){
+
+        variacoesMessageDto.forEach(variacaoMessage -> {
+            Variacao variacao = variacaoRepository.findById(variacaoMessage.getVariant_id()).orElseThrow(()-> new VariacaoNotFoundException(variacaoMessage.getVariant_id()));
+
+            Integer quantity = variacao.getQuantity() - variacaoMessage.getQuantity();
+            variacao.setQuantity(quantity);
+            variacaoRepository.save(variacao);
+        });
     }
+
+
 }

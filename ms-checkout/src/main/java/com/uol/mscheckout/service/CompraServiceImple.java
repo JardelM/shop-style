@@ -6,64 +6,95 @@ import com.uol.mscheckout.dto.*;
 import com.uol.mscheckout.entity.Pagamento;
 import com.uol.mscheckout.exceptions.*;
 import com.uol.mscheckout.repository.PagamentoRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class CompraServiceImple implements CompraService {
 
-    @Autowired
-    private PagamentoRepository pagamentoRepository;
+
+    private final PagamentoRepository pagamentoRepository;
+
+    private final CustomerClient customerClient;
+
+    private final CatalogClient catalogClient;
+
+    private final MQServiceImpl mqService;
+
+    private final ModelMapper modelMapper;
+
 
     @Autowired
-    private CustomerClient customerClient;
-
-    @Autowired
-    private CatalogClient catalogClient;
-
-    @Autowired
-    private MQServiceImpl mqService;
+    public CompraServiceImple (CustomerClient customerClient , CatalogClient catalogClient , PagamentoRepository pagamentoRepository, MQServiceImpl mqService, ModelMapper modelMapper){
+        this.customerClient = customerClient;
+        this.catalogClient = catalogClient;
+        this.pagamentoRepository = pagamentoRepository;
+        this.mqService = mqService;
+        this.modelMapper = modelMapper;
+    }
 
 
     @Override
     public void createPurchase(CompraFormDto compraFormDto) {
 
-        UsuarioDto usuarioDto = customerClient.findbyId(compraFormDto.getUser_id());
-        if(!usuarioDto.getActive()){
+        BigDecimal totalCusto = BigDecimal.ZERO;
+
+        UsuarioAtivoDto usuario = customerClient.findById(compraFormDto.getUser_id());
+
+        if (!usuario.getActive())
             throw new UserNotActiveException(compraFormDto.getUser_id());
-        }
 
         Pagamento pagamento = pagamentoRepository.findById(compraFormDto.getPayment_id())
                 .orElseThrow(()-> new PagamentoNotFoundException(compraFormDto.getPayment_id()));
 
-        if (!pagamento.getStatus()){
-            throw new PagamentoNotActiveException(compraFormDto.getUser_id());
-        }
+        if (!pagamento.getStatus())
+            throw new PagamentoNotActiveException(compraFormDto.getPayment_id());
 
         List<CarrinhoFormDto> cart = compraFormDto.getCart();
-        cart.forEach(item ->{
-            VariacaoDto variacao = catalogClient.findById(item.getVariant_id());
 
-            if(!variacao.getProduct().getActive()){
-                throw new ProdutoNotActiveException(variacao.getProduct().getId());
-            }
+        for (CarrinhoFormDto item : cart){
 
-            if(item.getQuantity() > variacao.getQuantity()){
-                throw new EstoqueInsuficienteException(item.getVariant_id());
-            }
+            VariacaoProdutoDto variacao = catalogClient.getById(item.getVariant_id());
+            ProdutoAtivoDto produto = catalogClient.findById(variacao.getProduct_id());
 
-        });
+            if (!produto.getActive())
+                throw new ProdutoNotActiveException(produto.getId());
+
+            if (item.getQuantity() > variacao.getQuantity())
+                throw new EstoqueInsuficienteException(variacao.getId());
 
 
-        VariacaoMessageDto variacaoMessageDto = new VariacaoMessageDto();
+            BigDecimal itemCusto = variacao.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+            totalCusto = totalCusto.add(itemCusto);
 
-        cart.forEach(item ->{
-            variacaoMessageDto.setId(item.getVariant_id());
-            variacaoMessageDto.setQuantity(item.getQuantity());
-            mqService.messageToCatalog(variacaoMessageDto);
-        });
+
+        }
+
+        List<VariacaoMessageDto> variacaoMessageDtoList = cart.stream()
+                .map(item-> modelMapper.map(item , VariacaoMessageDto.class))
+                .toList();
+
+        mqService.publishMessageToCatalog(variacaoMessageDtoList);
+
+
+        CompraMessageDto compraMessageDto = new CompraMessageDto(
+                compraFormDto.getUser_id(),
+                compraFormDto.getPayment_id(),
+                totalCusto,
+                LocalDate.now(),
+                variacaoMessageDtoList
+        );
+
+        mqService.publishMessageTOHistory(compraMessageDto);
+
+
+
+
 
 
 

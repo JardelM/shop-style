@@ -8,7 +8,7 @@ spring:
   application:
     name: catalog
   rabbitmq:
-    addresses: amqps://feibsqjg:On2bsDE32Ap27vHvIhqVRzOwW473dXLU@woodpecker.rmq.cloudamqp.com/feibsqjg
+    addresses: amqps://jmmjykoz:4LbT_eDd4nf5OS9sENdfkB4TqdQSmTCC@hawk.rmq.cloudamqp.com/jmmjykoz
 
 eureka:
   client:

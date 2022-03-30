@@ -15,11 +15,15 @@ import java.util.stream.Collectors;
 @Service
 public class PagamentoServiceImple implements PagamentoService{
 
-    @Autowired
-    private PagamentoRepository pagamentoRepository;
+    private final PagamentoRepository pagamentoRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    public PagamentoServiceImple (PagamentoRepository pagamentoRepository , ModelMapper modelMapper){
+        this.pagamentoRepository = pagamentoRepository;
+        this.modelMapper = modelMapper;
+    }
 
 
     @Override

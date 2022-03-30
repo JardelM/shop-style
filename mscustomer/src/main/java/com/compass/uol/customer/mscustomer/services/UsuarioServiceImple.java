@@ -25,11 +25,14 @@ public class UsuarioServiceImple implements UsuarioService {
 
     @Override
     public UsuarioDto getUser(Long id) {
-        Optional<Usuario> usuario = this.usuarioRepository.findById(id);
-        if (usuario.isPresent())
-            return modelMapper.map(usuario.get() , UsuarioDto.class);
+//        Optional<Usuario> usuario = this.usuarioRepository.findById(id);
+//        if (usuario.isPresent())
+//            return modelMapper.map(usuario.get() , UsuarioDto.class);
+//
+//        throw new ResourceNotFoundException("Id não encontrado");
 
-        throw new ResourceNotFoundException("Id não encontrado");
+        Optional<Usuario> usuario = usuarioRepository.findById(id);
+        return modelMapper.map(usuario.get() , UsuarioDto.class);
     }
 
     @Override
@@ -74,6 +77,9 @@ public class UsuarioServiceImple implements UsuarioService {
 
 
 
+
+
     }
+
 
 }

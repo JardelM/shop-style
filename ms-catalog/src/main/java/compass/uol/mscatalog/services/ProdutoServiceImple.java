@@ -29,6 +29,9 @@ public class ProdutoServiceImple implements ProdutoService{
     @Autowired
     private ModelMapper modelMapper;
 
+
+
+
     @Override
     public ProdutoDto createProduct(ProdutoFormDto body) {
 
@@ -111,12 +114,13 @@ public class ProdutoServiceImple implements ProdutoService{
     }
 
     private List<Categoria> verificaCategoria(ProdutoFormDto produtoFormDto){
-        List<String> categoriasId = new ArrayList<>(produtoFormDto.getCategory_ids());
         List<Categoria> categorias = new ArrayList<>();
+        List<String> category_ids = new ArrayList<>(produtoFormDto.getCategory_ids());
 
-        categoriasId.forEach(catId ->{
-            Categoria categoria = verificaExistenciaCategoria(catId);
-            verificaSeCategoriaEstaAtiva (catId, categoria);
+
+        category_ids.forEach(id ->{
+            Categoria categoria = verificaExistenciaCategoria(id);
+            verificaSeCategoriaEstaAtiva (id, categoria);
             categorias.add(categoria);
         });
         return categorias;
@@ -131,14 +135,6 @@ public class ProdutoServiceImple implements ProdutoService{
         return categoriaRepository.findById(catId).orElseThrow(() -> new CategoryNotFoundException(catId));
     }
 
-
-    private void adicionaProdutoACategoria(Produto produtoCriado , Categoria categoria){
-
-        categoria.getProducts().add(produtoCriado);
-        categoriaRepository.save(categoria);
-    }
-
-
     private void atualizaCategoria (List<Categoria> categorias , Produto produtoAtualizado){
 
         categorias.forEach(categoria -> {
@@ -147,6 +143,7 @@ public class ProdutoServiceImple implements ProdutoService{
         });
         removeProdutoDaCategoria(categorias , produtoAtualizado);
     }
+
 
     private void removeProdutoDaCategoria(List<Categoria> categorias, Produto produtoAtualizado) {
 
@@ -157,6 +154,12 @@ public class ProdutoServiceImple implements ProdutoService{
                     categoria.getProducts().remove(produtoAtualizado);
                     categoriaRepository.save(categoria);
                 });
+    }
+
+    private void adicionaProdutoACategoria(Produto produtoCriado , Categoria categoria){
+
+        categoria.getProducts().add(produtoCriado);
+        categoriaRepository.save(categoria);
     }
 
 }

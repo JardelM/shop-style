@@ -1,13 +1,12 @@
 package compass.uol.mscatalog.services;
 
-import compass.uol.mscatalog.dto.ProdutoInfoDto;
-import compass.uol.mscatalog.exceptions.ProductNotFoundException;
-import compass.uol.mscatalog.exceptions.VariacaoNotFoundException;
 import compass.uol.mscatalog.dto.VariacaoDto;
 import compass.uol.mscatalog.dto.VariacaoFormDto;
 import compass.uol.mscatalog.dto.VariacaoProdutoDto;
 import compass.uol.mscatalog.entity.Produto;
 import compass.uol.mscatalog.entity.Variacao;
+import compass.uol.mscatalog.exceptions.ProductNotFoundException;
+import compass.uol.mscatalog.exceptions.VariacaoNotFoundException;
 import compass.uol.mscatalog.repository.ProdutoRepository;
 import compass.uol.mscatalog.repository.VariacaoRepository;
 import org.modelmapper.ModelMapper;
@@ -44,17 +43,11 @@ public class VariacaoServiceImple implements VariacaoService {
     @Override
     public VariacaoProdutoDto getVariation(String id) {
 
-        ProdutoInfoDto produtoInfoDto = null;
         Variacao variacao = verificaExistenciaVariacao(id);
-
         Optional<Produto> produto = produtoRepository.findByVariationsId(id);
-
         VariacaoProdutoDto variacaoProdutoDto = modelMapper.map(variacao , VariacaoProdutoDto.class);
 
-        if (produto.isPresent())
-            produtoInfoDto = modelMapper.map(produto.get() , ProdutoInfoDto.class);
-
-        variacaoProdutoDto.setProduct(produtoInfoDto);
+        produto.ifPresent(value -> variacaoProdutoDto.setProduct_id(value.getId()));
         return variacaoProdutoDto;
 
     }

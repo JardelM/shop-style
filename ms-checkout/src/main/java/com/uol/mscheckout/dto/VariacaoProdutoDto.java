@@ -1,5 +1,4 @@
-package compass.uol.mscatalog.dto;
-
+package com.uol.mscheckout.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,8 +12,6 @@ import java.math.BigDecimal;
 public class VariacaoProdutoDto {
 
     private String id;
-    private String color;
-    private String size;
     private BigDecimal price;
     private Integer quantity;
     private String product_id;
