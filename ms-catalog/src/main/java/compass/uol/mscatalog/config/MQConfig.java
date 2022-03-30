@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MQConfig {
 
-    public static final String QUEUE = "catalog.queue"; //catalog_queue tava dando loop infinito
+    public static final String QUEUE = "catalog_queue"; //catalog_queue tava dando loop infinito
     public static final String EXCHANGE = "amq.direct";
 
     @Bean

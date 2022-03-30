@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VariacaoMessageDto {
 
-    private String id;
+    private String variant_id;
     private Integer quantity;
 }
