@@ -1,12 +1,12 @@
 package compass.uol.mscatalog.services;
 
-import compass.uol.mscatalog.exceptions.CategoryNotActiveException;
-import compass.uol.mscatalog.exceptions.CategoryNotFoundException;
-import compass.uol.mscatalog.exceptions.ProductNotFoundException;
 import compass.uol.mscatalog.dto.ProdutoDto;
 import compass.uol.mscatalog.dto.ProdutoFormDto;
 import compass.uol.mscatalog.entity.Categoria;
 import compass.uol.mscatalog.entity.Produto;
+import compass.uol.mscatalog.exceptions.CategoryNotActiveException;
+import compass.uol.mscatalog.exceptions.CategoryNotFoundException;
+import compass.uol.mscatalog.exceptions.ProductNotFoundException;
 import compass.uol.mscatalog.repository.CategoriaRepository;
 import compass.uol.mscatalog.repository.ProdutoRepository;
 import org.modelmapper.ModelMapper;
@@ -18,135 +18,123 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ProdutoServiceImple implements ProdutoService{
+public class ProdutoServiceImple implements ProdutoService {
+
+    private final ProdutoRepository produtoRepository;
+
+    private final CategoriaRepository categoriaRepository;
+
+    private final ModelMapper modelMapper;
 
     @Autowired
-    private ProdutoRepository produtoRepository;
-
-    @Autowired
-    private CategoriaRepository categoriaRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-
-
+    public ProdutoServiceImple (ProdutoRepository produtoRepository , CategoriaRepository categoriaRepository , ModelMapper modelMapper){
+        this.produtoRepository = produtoRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
-    public ProdutoDto createProduct(ProdutoFormDto body) {
+    public ProdutoDto createProduct(ProdutoFormDto produtoFormDto) {
 
-        List<Categoria> categorias = verificaCategoria(body);
-        Produto produto = modelMapper.map(body , Produto.class);
-
-        Produto produtoCriado = produtoRepository.save(produto);
+        List<Categoria> categorias = verificaCategorias(produtoFormDto);
+        Produto produtoACriar = modelMapper.map(produtoFormDto , Produto.class); //duvida em como se da a conversao com atributos diferentes
+        Produto produtoCriado = produtoRepository.save(produtoACriar);
 
         categorias.forEach(categoria -> {
             adicionaProdutoACategoria(produtoCriado , categoria);
         });
 
         return modelMapper.map(produtoCriado , ProdutoDto.class);
-
     }
+
 
     @Override
     public List<ProdutoDto> findAll() {
+
         List<Produto> produtos = produtoRepository.findAll();
         return produtos.stream().map(produto -> modelMapper.map(produto , ProdutoDto.class)).collect(Collectors.toList());
     }
 
     @Override
     public ProdutoDto getProduct(String id) {
-        Produto produto = verificaExistenciaProduto(id);
-        return modelMapper.map(produto, ProdutoDto.class);
 
+        Produto produto = verificaExistenciaProduto(id);
+        return modelMapper.map(produto , ProdutoDto.class);
     }
+
+
 
     @Override
-    public ProdutoDto updateProduct(String id , ProdutoFormDto produtoFormDto) {
+    public ProdutoDto updateProduct(String id, ProdutoFormDto produtoFormDto) {
 
         verificaExistenciaProduto(id);
+        List<Categoria> categorias = verificaCategorias(produtoFormDto);
+        Produto produtoAAtualizar = modelMapper.map(produtoFormDto , Produto.class);
+        produtoAAtualizar.setId(id);
+        Produto produtoAtualizado = produtoRepository.save(produtoAAtualizar);
 
-        List<Categoria> categorias = verificaCategoria(produtoFormDto);
-
-        Produto produtoaAtualizar = modelMapper.map(produtoFormDto , Produto.class);
-        produtoaAtualizar.setId(id);
-        Produto produtoAtualizado = produtoRepository.save(produtoaAtualizar);
-
-        atualizaCategoria(categorias ,produtoAtualizado );
+        atualizaCategorias(categorias, produtoAtualizado);
 
         return modelMapper.map(produtoAtualizado , ProdutoDto.class);
-
-
-
     }
+
+
 
     @Override
     public void deleteProduct(String id) {
-        Produto produto = verificaExistenciaProduto(id);
-        List<Categoria> categorias = categoriaRepository.findAllProductsById(produto.getId());
 
+        Produto produto = verificaExistenciaProduto(id);
+
+        List<Categoria> categorias = categoriaRepository.findAllByProductsId(produto.getId());
         categorias.forEach(categoria -> {
             categoria.getProducts().remove(produto);
             categoriaRepository.save(categoria);
         });
         produtoRepository.deleteById(id);
+
     }
 
-/*
-    //adiciono as categorias ao produto
-    private Produto setCategories (ProdutoFormDto produtoFormDto){
-        List<String> categoriesId = new ArrayList<>(produtoFormDto.getCategory_ids());
-        Produto produto = modelMapper.map(produtoFormDto, Produto.class);
-
-        //categories id só tem strings de ids em si, devido ao comando get acima
-        categoriesId.forEach(catId ->{
-            Categoria categoria = verificaExistenciaId(catId);
-            verificaSeIdEstaAtivo(catId, categoria);
-            produto.getCategories().add(categoria);
-
-        });
-        return produto;
-    }*/
-
-
-    private Produto verificaExistenciaProduto (String id){
-        return produtoRepository.findById(id).orElseThrow(()-> new ProductNotFoundException(id));
-    }
-
-    private List<Categoria> verificaCategoria(ProdutoFormDto produtoFormDto){
+    private List<Categoria> verificaCategorias(ProdutoFormDto produtoFormDto){
         List<Categoria> categorias = new ArrayList<>();
-        List<String> category_ids = new ArrayList<>(produtoFormDto.getCategory_ids());
+        List<String> categoria_ids = produtoFormDto.getCategory_ids();
 
-
-        category_ids.forEach(id ->{
+        categoria_ids.forEach(id ->{
             Categoria categoria = verificaExistenciaCategoria(id);
-            verificaSeCategoriaEstaAtiva (id, categoria);
+            verificaSeCategoriaEstaAtiva(id, categoria);
             categorias.add(categoria);
         });
         return categorias;
     }
 
-    private void verificaSeCategoriaEstaAtiva(String catId, Categoria categoria) {
-        if (!categoria.getActive())
-            throw new CategoryNotActiveException(catId);
+    private void verificaSeCategoriaEstaAtiva(String id, Categoria categoria) {
+        if(!categoria.getActive())
+            throw new CategoryNotActiveException(id);
     }
 
-    private Categoria verificaExistenciaCategoria(String catId) {
-        return categoriaRepository.findById(catId).orElseThrow(() -> new CategoryNotFoundException(catId));
+    private Categoria verificaExistenciaCategoria(String id) {
+        return categoriaRepository.findById(id).orElseThrow(()->new CategoryNotFoundException(id));
     }
 
-    private void atualizaCategoria (List<Categoria> categorias , Produto produtoAtualizado){
+    private void adicionaProdutoACategoria(Produto produtoCriado, Categoria categoria) {
+        categoria.getProducts().add(produtoCriado);
+        categoriaRepository.save(categoria);
+    }
 
+    private Produto verificaExistenciaProduto(String id) {
+        return produtoRepository.findById(id).orElseThrow(()-> new ProductNotFoundException(id));
+    }
+
+    //nao entendi essa logica
+    private void atualizaCategorias(List<Categoria> categorias, Produto produtoAtualizado) {
         categorias.forEach(categoria -> {
             if (!categoria.getProducts().contains(produtoAtualizado))
                 adicionaProdutoACategoria(produtoAtualizado , categoria);
+
         });
-        removeProdutoDaCategoria(categorias , produtoAtualizado);
+        removeProdutoDeCategoria(categorias , produtoAtualizado);
     }
 
-
-    private void removeProdutoDaCategoria(List<Categoria> categorias, Produto produtoAtualizado) {
-
+    private void removeProdutoDeCategoria(List<Categoria> categorias, Produto produtoAtualizado) {
         List<Categoria> todasCategorias = categoriaRepository.findAll();
         todasCategorias.stream()
                 .filter(categoria -> !categorias.contains(categoria))
@@ -155,11 +143,4 @@ public class ProdutoServiceImple implements ProdutoService{
                     categoriaRepository.save(categoria);
                 });
     }
-
-    private void adicionaProdutoACategoria(Produto produtoCriado , Categoria categoria){
-
-        categoria.getProducts().add(produtoCriado);
-        categoriaRepository.save(categoria);
-    }
-
 }

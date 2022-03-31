@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class MQConfig {
+public class MQConfiguration {
 
-    public static final String QUEUE = "catalog_queue"; //catalog_queue tava dando loop infinito
+    public static final String QUEUE = "catalog_queue";
     public static final String EXCHANGE = "amq.direct";
 
     @Bean
@@ -28,14 +28,13 @@ public class MQConfig {
     }
 
     @Bean
-    public Binding binding (Queue queue , DirectExchange exchange){
+    public Binding binding (Queue queue, DirectExchange exchange){
         return new Binding(queue().getName(),
                 Binding.DestinationType.QUEUE,
                 exchange().getName(),
-                queue.getName(),
+                queue().getName(),
                 null);
     }
-
 
     @Bean
     public MessageConverter messageConverter(){
@@ -48,4 +47,5 @@ public class MQConfig {
         template.setMessageConverter(messageConverter());
         return template;
     }
+
 }

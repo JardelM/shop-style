@@ -1,13 +1,12 @@
 package compass.uol.mscatalog.services;
 
-import compass.uol.mscatalog.entity.Categoria;
-import compass.uol.mscatalog.entity.Produto;
-import compass.uol.mscatalog.exceptions.CategoryNotFoundException;
 import compass.uol.mscatalog.dto.CategoriaDto;
 import compass.uol.mscatalog.dto.CategoriaFormDto;
 import compass.uol.mscatalog.dto.ProdutoDto;
+import compass.uol.mscatalog.entity.Categoria;
+import compass.uol.mscatalog.entity.Produto;
+import compass.uol.mscatalog.exceptions.CategoryNotFoundException;
 import compass.uol.mscatalog.repository.CategoriaRepository;
-import compass.uol.mscatalog.repository.ProdutoRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

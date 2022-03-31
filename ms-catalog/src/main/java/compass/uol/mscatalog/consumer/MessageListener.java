@@ -1,6 +1,6 @@
 package compass.uol.mscatalog.consumer;
 
-import compass.uol.mscatalog.config.MQConfig;
+import compass.uol.mscatalog.config.MQConfiguration;
 import compass.uol.mscatalog.dto.VariacaoMessageDto;
 import compass.uol.mscatalog.entity.Variacao;
 import compass.uol.mscatalog.exceptions.VariacaoNotFoundException;
@@ -21,22 +21,15 @@ public class MessageListener {
         this.variacaoRepository = variacaoRepository;
     }
 
+    @RabbitListener (queues = MQConfiguration.QUEUE)
+    public void listener (List<VariacaoMessageDto> variacoesMessageDto){
 
-    // diminui a quantidade de variacao no estoque.
-    @RabbitListener (queues = MQConfig.QUEUE)
-     void listener (List<VariacaoMessageDto> variacoesMessageDto){
-
-
-        //System.out.println(variacoesMessageDto);
-
-        variacoesMessageDto.forEach(variacaoMessage -> {
-            Variacao variacao = variacaoRepository.findById(variacaoMessage.getVariant_id()).orElseThrow(()-> new VariacaoNotFoundException(variacaoMessage.getVariant_id()));
-
-            Integer quantity = variacao.getQuantity() - variacaoMessage.getQuantity();
-            variacao.setQuantity(quantity);
+        variacoesMessageDto.forEach(variacaoMessageDto -> {
+            Variacao variacao = variacaoRepository.findById(variacaoMessageDto.getVariant_id())
+                    .orElseThrow(()-> new VariacaoNotFoundException(variacaoMessageDto.getVariant_id()));
+            Integer quantidade = variacao.getQuantity() - variacaoMessageDto.getQuantity();
+            variacao.setQuantity(quantidade);
             variacaoRepository.save(variacao);
         });
     }
-
-
 }
