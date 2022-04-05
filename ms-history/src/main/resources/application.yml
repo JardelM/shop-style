@@ -1,0 +1,18 @@
+server:
+  port: 8083
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/history
+  application:
+    name: history
+  rabbitmq:
+    addresses: amqps://jmmjykoz:4LbT_eDd4nf5OS9sENdfkB4TqdQSmTCC@hawk.rmq.cloudamqp.com/jmmjykoz
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true

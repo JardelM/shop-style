@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class MQConfiguracion {
 
     public static final String CATALOG_QUEUE = "catalog_queue";
-    public static final String HISTORY_QUEUE = "hystory_queue";
+    public static final String HISTORY_QUEUE = "history_queue";
     public static final String CATALOG_ROUTING_KEY = "catalog_routingKey";
     public static final String HISTORY_ROUTING_KEY = "history_routingKey";
     public static final String EXCHANGE = "amq.direct";
@@ -40,7 +40,7 @@ public class MQConfiguracion {
 
     @Bean
     public Binding historyBinding (Queue historyQueue, DirectExchange exchange){
-        return BindingBuilder.bind(historyQueue).to(exchange).with(CATALOG_ROUTING_KEY);
+        return BindingBuilder.bind(historyQueue).to(exchange).with(HISTORY_ROUTING_KEY); //testar amanha
     }
 
     @Bean

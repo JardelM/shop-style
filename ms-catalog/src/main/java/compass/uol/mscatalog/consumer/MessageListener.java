@@ -24,6 +24,8 @@ public class MessageListener {
     @RabbitListener (queues = MQConfiguration.QUEUE)
     public void listener (List<VariacaoMessageDto> variacoesMessageDto){
 
+        System.out.println(variacoesMessageDto);
+
         variacoesMessageDto.forEach(variacaoMessageDto -> {
             Variacao variacao = variacaoRepository.findById(variacaoMessageDto.getVariant_id())
                     .orElseThrow(()-> new VariacaoNotFoundException(variacaoMessageDto.getVariant_id()));
