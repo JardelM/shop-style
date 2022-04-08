@@ -56,7 +56,7 @@ class UsuarioControllerTest {
     }
 
     @Test
-    void deveriaRetornaremail() throws Exception{
+    void deveriaRetornarEmail() throws Exception{
 
         UsuarioFormDto usuarioFormDto = criaUsuarioFormDto();
         UsuarioDto usuarioDto = criaUsuarioDto();

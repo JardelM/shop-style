@@ -63,18 +63,18 @@ class CategoriaControllerTest {
                 .content(objectMapper.writeValueAsString(categoriaDto)))
                 .andExpect(status().isCreated());
     }
-//
-//    @Test
-//    void deveriaRetornarOkAoTentarRecuperarProdutosPelaCategoria() throws Exception{
-//        String id = "id";
-//        ProdutoDto produtoDto = criaProdutoDto();
-//
-//        when(this.service.findAllProductsByCategory(id)).thenReturn(Collections.singletonList(produtoDto));
-//
-//        mockMvc.perform(get(CATEGORIA_URL+CATEGORIA_ID+PRODUTO_URL)
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//    }
+
+    @Test
+    void deveriaRetornarOkAoTentarRecuperarProdutosPelaCategoria() throws Exception{
+        String id = "id";
+        ProdutoDto produtoDto = criaProdutoDto();
+
+        when(this.service.findProductsFromCategory(id)).thenReturn(Collections.singletonList(produtoDto));
+
+        mockMvc.perform(get(CATEGORIA_URL+CATEGORIA_ID+PRODUTO_URL)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
 
 

@@ -17,26 +17,16 @@ import java.util.List;
 @Service
 public class CompraServiceImple implements CompraService {
 
-
-    private final PagamentoRepository pagamentoRepository;
-
-    private final CustomerClient customerClient;
-
-    private final CatalogClient catalogClient;
-
-    private final MQServiceImpl mqService;
-
-    private final ModelMapper modelMapper;
-
-
     @Autowired
-    public CompraServiceImple (CustomerClient customerClient , CatalogClient catalogClient , PagamentoRepository pagamentoRepository, MQServiceImpl mqService, ModelMapper modelMapper){
-        this.customerClient = customerClient;
-        this.catalogClient = catalogClient;
-        this.pagamentoRepository = pagamentoRepository;
-        this.mqService = mqService;
-        this.modelMapper = modelMapper;
-    }
+    private PagamentoRepository pagamentoRepository;
+    @Autowired
+    private CustomerClient customerClient;
+    @Autowired
+    private CatalogClient catalogClient;
+    @Autowired
+    private MQServiceImpl mqService;
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     @Override
@@ -75,7 +65,8 @@ public class CompraServiceImple implements CompraService {
 
         }
 
-        List<VariacaoMessageDto> variacaoMessageDtoList = cart.stream()
+        List<VariacaoMessageDto>
+                variacaoMessageDtoList = cart.stream()
                 .map(item-> modelMapper.map(item , VariacaoMessageDto.class))
                 .toList();
 
@@ -92,15 +83,7 @@ public class CompraServiceImple implements CompraService {
 
         mqService.publishMessageTOHistory(compraMessageDto);
 
-
-
-
-
-
-
     }
-
-
 
 
 }

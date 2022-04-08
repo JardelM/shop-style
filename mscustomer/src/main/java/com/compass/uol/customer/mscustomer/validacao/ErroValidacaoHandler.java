@@ -43,22 +43,22 @@ public class ErroValidacaoHandler {
 
     }
 
-    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(InvalidFormatException.class)
-    public List<ErroFormDto> handle(MethodArgumentNotValidException exception) {
-
-        List<ErroFormDto> dto = new ArrayList<>();
-        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
-
-        fieldErrors.forEach(e -> {
-            String mensagem = messageSource.getMessage(e, LocaleContextHolder.getLocale());
-            ErroFormDto erro = new ErroFormDto(e.getField(), mensagem);
-            dto.add(erro);
-        });
-
-        return dto;
-
-    }
+//    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(InvalidFormatException.class)
+//    public List<ErroFormDto> handle(MethodArgumentNotValidException exception) {
+//
+//        List<ErroFormDto> dto = new ArrayList<>();
+//        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
+//
+//        fieldErrors.forEach(e -> {
+//            String mensagem = messageSource.getMessage(e, LocaleContextHolder.getLocale());
+//            ErroFormDto erro = new ErroFormDto(e.getField(), mensagem);
+//            dto.add(erro);
+//        });
+//
+//        return dto;
+//
+//    }
 
     //valida o problema do id
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -69,7 +69,8 @@ public class ErroValidacaoHandler {
                 HttpStatus.NOT_FOUND.value(),
                 new Date(),
                 ex.getLocalizedMessage(),
-                request.getDescription(false));
+                HttpStatus.NOT_FOUND.getReasonPhrase());
+                //request.getDescription(false)); mostra a uri no erro
     }
 
     @ResponseStatus (HttpStatus.BAD_REQUEST)

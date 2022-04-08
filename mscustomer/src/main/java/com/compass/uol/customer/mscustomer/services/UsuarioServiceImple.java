@@ -25,18 +25,17 @@ public class UsuarioServiceImple implements UsuarioService {
 
     @Override
     public UsuarioDto getUser(Long id) {
-//        Optional<Usuario> usuario = this.usuarioRepository.findById(id);
-//        if (usuario.isPresent())
-//            return modelMapper.map(usuario.get() , UsuarioDto.class);
-//
-//        throw new ResourceNotFoundException("Id não encontrado");
 
-        Optional<Usuario> usuario = usuarioRepository.findById(id);
-        return modelMapper.map(usuario.get() , UsuarioDto.class);
+        Optional<Usuario> usuario = this.usuarioRepository.findById(id);
+        if (usuario.isPresent())
+            return modelMapper.map(usuario.get() , UsuarioDto.class);
+
+        throw new ResourceNotFoundException("Id não encontrado");
     }
 
     @Override
     public UsuarioDto updateUser(Long id, UsuarioFormDto body) {
+
         Optional<Usuario> usuarioEncontrado = usuarioRepository.findByEmail(body.getEmail());
         usuarioEncontrado.ifPresent(usuario -> {
             if (!Objects.equals(usuarioEncontrado.get().getId() , id))
@@ -49,20 +48,9 @@ public class UsuarioServiceImple implements UsuarioService {
     }
 
 
-//    @Override
-//    public UsuarioDto updateUser(Long id, UsuarioFormDto body) {
-//        Optional <Usuario> usuario = this.usuarioRepository.findById(id);
-//        if (usuario.isPresent()){
-//            Usuario updatedUsuario = modelMapper.map(body , Usuario.class);
-//            updatedUsuario.setId(id); //ele cria outro usuario no banco se esse id nao for setado
-//            this.usuarioRepository.save(updatedUsuario);
-//            return modelMapper.map(updatedUsuario , UsuarioDto.class);
-//        }
-//        throw new ResourceNotFoundException("Id não encontrado");
-//    }
-
     @Override
     public UsuarioDto createUser(UsuarioFormDto usuarioFormDto) {
+
         verificaEmail (usuarioFormDto);
         Usuario usuarioACriar = modelMapper.map(usuarioFormDto , Usuario.class);
         Usuario usuarioCriado = this.usuarioRepository.save(usuarioACriar);
@@ -70,14 +58,11 @@ public class UsuarioServiceImple implements UsuarioService {
     }
 
     void verificaEmail(UsuarioFormDto usuarioFormDto) {
+
         Optional<Usuario> usuarioEncontrado = this.usuarioRepository.findByEmail(usuarioFormDto.getEmail());
         usuarioEncontrado.ifPresent(user -> {
             throw new UserAlreadyExistsException(user.getEmail());
         });
-
-
-
-
 
     }
 
