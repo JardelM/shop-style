@@ -36,14 +36,12 @@ public class CompraServiceImple implements CompraService {
 
         UsuarioAtivoDto usuario = customerClient.findById(compraFormDto.getUser_id());
 
-        if (!usuario.getActive())
-            throw new UserNotActiveException(compraFormDto.getUser_id());
+        verificaSeUsuarioEstaAtivo(compraFormDto.getUser_id(), usuario.getActive());
 
         Pagamento pagamento = pagamentoRepository.findById(compraFormDto.getPayment_id())
                 .orElseThrow(()-> new PagamentoNotFoundException(compraFormDto.getPayment_id()));
 
-        if (!pagamento.getStatus())
-            throw new PagamentoNotActiveException(compraFormDto.getPayment_id());
+        verificaSePagamentoEstaAtivo(compraFormDto.getPayment_id(), pagamento.getStatus());
 
         List<CarrinhoFormDto> cart = compraFormDto.getCart();
 
@@ -52,26 +50,20 @@ public class CompraServiceImple implements CompraService {
             VariacaoProdutoDto variacao = catalogClient.getById(item.getVariant_id());
             ProdutoAtivoDto produto = catalogClient.findById(variacao.getProduct_id());
 
-            if (!produto.getActive())
-                throw new ProdutoNotActiveException(produto.getId());
+            verificaSeProdutoEstaAtivo(produto.getId() , produto.getActive());
 
-            if (item.getQuantity() > variacao.getQuantity())
-                throw new EstoqueInsuficienteException(variacao.getId());
-
+            verificaDisponibilidadeEstoque(item.getQuantity() , variacao.getQuantity(), variacao.getId());
 
             BigDecimal itemCusto = variacao.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
             totalCusto = totalCusto.add(itemCusto);
 
-
         }
 
-        List<VariacaoMessageDto>
-                variacaoMessageDtoList = cart.stream()
+        List<VariacaoMessageDto> variacaoMessageDtoList = cart.stream()
                 .map(item-> modelMapper.map(item , VariacaoMessageDto.class))
                 .toList();
 
         mqService.publishMessageToCatalog(variacaoMessageDtoList);
-
 
         CompraMessageDto compraMessageDto = new CompraMessageDto(
                 compraFormDto.getUser_id(),
@@ -82,7 +74,26 @@ public class CompraServiceImple implements CompraService {
         );
 
         mqService.publishMessageTOHistory(compraMessageDto);
+    }
 
+    private void verificaDisponibilidadeEstoque(Integer quantidadeItem, Integer quantidadeVariacao, String id) {
+        if (quantidadeItem > quantidadeVariacao)
+            throw new EstoqueInsuficienteException(id);
+    }
+
+    private void verificaSeProdutoEstaAtivo(String id, Boolean active) {
+        if (!active)
+            throw new ProdutoNotActiveException(id);
+    }
+
+    private void verificaSePagamentoEstaAtivo(Long payment_id, Boolean status) {
+        if (!status)
+            throw new PagamentoNotActiveException(payment_id);
+    }
+
+    private void verificaSeUsuarioEstaAtivo(Long id, Boolean active) {
+        if (!active)
+            throw new UserNotActiveException(id);
     }
 
 

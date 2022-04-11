@@ -11,4 +11,5 @@ public interface CustomerClient {
     @GetMapping("v1/users/{id}")
     UsuarioAtivoDto findById(@PathVariable Long id);
 
+
 }

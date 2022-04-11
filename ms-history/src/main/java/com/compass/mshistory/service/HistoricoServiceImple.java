@@ -50,9 +50,8 @@ public class HistoricoServiceImple implements HistoricoService {
     @Override
     public void insereNovaCompra(CompraMessageDto compraMessageDto) {
 
-        Long userId = compraMessageDto.getUserId();
-
-        Historico historico = historicoRepository.findByUserId(userId).orElse(new Historico(compraMessageDto.getUserId()));
+        Historico historico = historicoRepository.findByUserId(compraMessageDto.getUserId())
+                .orElse(new Historico(compraMessageDto.getUserId()));
 
         Compra compraASalvar = modelMapper.map(compraMessageDto , Compra.class);
 

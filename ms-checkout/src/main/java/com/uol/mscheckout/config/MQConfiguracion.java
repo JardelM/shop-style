@@ -40,7 +40,7 @@ public class MQConfiguracion {
 
     @Bean
     public Binding historyBinding (Queue historyQueue, DirectExchange exchange){
-        return BindingBuilder.bind(historyQueue).to(exchange).with(HISTORY_ROUTING_KEY); //testar amanha
+        return BindingBuilder.bind(historyQueue).to(exchange).with(HISTORY_ROUTING_KEY);
     }
 
     @Bean
