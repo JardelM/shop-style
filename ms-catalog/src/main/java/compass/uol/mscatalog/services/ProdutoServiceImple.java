@@ -124,7 +124,6 @@ public class ProdutoServiceImple implements ProdutoService {
         return produtoRepository.findById(id).orElseThrow(()-> new ProductNotFoundException(id));
     }
 
-    //nao entendi essa logica
     private void atualizaCategorias(List<Categoria> categorias, Produto produtoAtualizado) {
         categorias.forEach(categoria -> {
             if (!categoria.getProducts().contains(produtoAtualizado))
