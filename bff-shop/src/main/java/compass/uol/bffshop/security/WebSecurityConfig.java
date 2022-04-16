@@ -55,7 +55,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         }
 
         http.authorizeHttpRequests()
-                .antMatchers(HttpMethod.GET, "/v1/users/*").permitAll()
                 .antMatchers(HttpMethod.POST, "/v1/login").permitAll()
                 .anyRequest().authenticated()
                 .and().csrf().disable()
