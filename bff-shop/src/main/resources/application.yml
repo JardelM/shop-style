@@ -10,7 +10,7 @@ eureka:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/bffshop
+    url: jdbc:postgresql://localhost:5432/customer
     username: postgres
     password: Info@1234
     driverClassName: org.postgresql.Driver
