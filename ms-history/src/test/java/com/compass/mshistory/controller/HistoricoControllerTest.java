@@ -15,8 +15,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureMockMvc
 class HistoricoControllerTest {
 
-    private static String HISTORICO_URL = "/v1/historic/user/";
-    private static String HISTORICO_ID = "/1";
+    private static final String HISTORICO_URL = "/v1/historic/user/";
+    private static final String HISTORICO_ID = "/1";
 
     @Autowired
     private MockMvc mockMvc;

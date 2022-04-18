@@ -69,6 +69,7 @@ public class BffController {
     }
 
     @PostMapping(("/users"))
+    @ResponseStatus(HttpStatus.CREATED)
     public UsuarioDto criaUsuario(@RequestBody UsuarioFormDto usuarioFormDto){
         return customerClient.criaUser(usuarioFormDto);
     }
