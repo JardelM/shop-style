@@ -8,6 +8,7 @@ import com.compass.uol.customer.mscustomer.exceptions.UserAlreadyExistsException
 import com.compass.uol.customer.mscustomer.repository.UsuarioRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -22,6 +23,9 @@ public class UsuarioServiceImple implements UsuarioService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private PasswordEncoder encoder;
 
     @Override
     public UsuarioDto getUser(Long id) {
@@ -41,6 +45,7 @@ public class UsuarioServiceImple implements UsuarioService {
             if (!Objects.equals(usuarioEncontrado.get().getId() , id))
                 throw new UserAlreadyExistsException(usuario.getEmail());
         });
+        body.setPassword(encoder.encode(body.getPassword()));
         Usuario usuarioAAtualizar = modelMapper.map(body , Usuario.class);
         usuarioAAtualizar.setId(id);
         Usuario usuarioAtualizado = usuarioRepository.save(usuarioAAtualizar);
@@ -52,6 +57,7 @@ public class UsuarioServiceImple implements UsuarioService {
     public UsuarioDto createUser(UsuarioFormDto usuarioFormDto) {
 
         verificaEmail (usuarioFormDto);
+        usuarioFormDto.setPassword(encoder.encode(usuarioFormDto.getPassword()));
         Usuario usuarioACriar = modelMapper.map(usuarioFormDto , Usuario.class);
         Usuario usuarioCriado = this.usuarioRepository.save(usuarioACriar);
         return modelMapper.map(usuarioCriado, UsuarioDto.class);

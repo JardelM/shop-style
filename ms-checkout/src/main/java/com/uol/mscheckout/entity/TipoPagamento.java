@@ -15,7 +15,7 @@ public enum TipoPagamento {
     private final String descricao;
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
-    public static TipoPagamento paraValores (@JsonProperty("sex") String des){
+    public static TipoPagamento paraValores (@JsonProperty("type") String des){
         for (TipoPagamento tipoPagamento : TipoPagamento.values()){
             if (tipoPagamento.descricao.equalsIgnoreCase(des))
                 return tipoPagamento;

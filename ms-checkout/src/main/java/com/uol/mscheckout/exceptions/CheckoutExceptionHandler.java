@@ -1,6 +1,7 @@
 package com.uol.mscheckout.exceptions;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -122,6 +124,12 @@ public class CheckoutExceptionHandler {
                 new Date(),
                 ex.getLocalizedMessage(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase());
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public String handleFeignStatusException(FeignException e, HttpServletResponse response) {
+        response.setStatus(e.status());
+        return e.getLocalizedMessage();
     }
 
 

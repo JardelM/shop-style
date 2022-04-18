@@ -15,7 +15,7 @@ import java.util.List;
 public class CompraDto {
 
     private PagamentoDto paymentMethod;
-    private List<ProdutoDto> products;
+    private List<ProdutoInfoDto> products;
     private BigDecimal total;
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate date;

@@ -57,11 +57,6 @@ public class BffController {
 
     }
 
-
-
-
-
-
     //customer
     @GetMapping("/users/{id}")
     public UsuarioDto retornaUsuario(@PathVariable Long id){
