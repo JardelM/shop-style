@@ -58,6 +58,7 @@ public class VariacaoServiceImple implements VariacaoService {
         Produto produto = verificaExistenciaProduto(variacaoFormDto.getProduct_id());
 
         Variacao variacaoACriar = modelMapper.map(variacaoFormDto , Variacao.class);
+        //variacaoACriar.setId(id); acho que esta dando errado por nao setar aqui
         Variacao variacaoCriada = variacaoRepository.save(variacaoACriar);
 
         if(!produto.getVariations().contains(variacao))
@@ -82,6 +83,7 @@ public class VariacaoServiceImple implements VariacaoService {
         });
         variacaoRepository.deleteById(id);
     }
+
 
 
 
