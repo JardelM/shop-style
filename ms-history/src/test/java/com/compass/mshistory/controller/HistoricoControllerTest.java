@@ -1,7 +1,9 @@
 package com.compass.mshistory.controller;
 
+import com.compass.mshistory.exceptions.HistoricoNotFoundException;
 import com.compass.mshistory.service.HistoricoService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +32,17 @@ class HistoricoControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get(HISTORICO_URL+HISTORICO_ID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void dadoIdInexistenteDeveRetornarNotFound() throws Exception{
+
+        Long id = 1L;
+        Mockito.when(historicoService.findUserHistoric(id)).thenThrow(HistoricoNotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(HISTORICO_URL+HISTORICO_ID)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
 }
